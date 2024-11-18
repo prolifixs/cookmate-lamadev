@@ -55,6 +55,8 @@ typescript:src/components/HomePage/index.tsx
 
 ## File Tree
 ```
+command to read file tree: tree /f /r /a:h
+
 dishypal/
 ├── src/
 │   ├── app/

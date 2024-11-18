@@ -1,5 +1,14 @@
-import HomePage from '@/components/HomePage'
+'use client'
+
+import MainLayout from '@/components/Layout/MainLayout'
+import KitchenPanel from '@/components/HomeComponents/Layout/KitchenPanel'
+import RecentCooks from '@/components/Layout/Feed/RecentCooks'
 
 export default function Home() {
-  return <HomePage />
+  return (
+    <MainLayout>
+      <KitchenPanel />
+      <RecentCooks />
+    </MainLayout>
+  )
 }
