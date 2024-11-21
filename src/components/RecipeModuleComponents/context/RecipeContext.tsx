@@ -2,6 +2,7 @@ import { createContext, useContext, ReactNode } from 'react';
 import { useRecipe } from '../hooks/useRecipe';
 import { useAllergy } from '../hooks/useAllergy';
 import { Ingredient, AlternativeItem } from '../types/recipe.types';
+import { Recipe } from '@/components/ProfileComponents/types/recipe.types';
 
 interface RecipeContextValue {
   ingredients: Ingredient[];
@@ -22,7 +23,12 @@ interface RecipeContextValue {
 
 const RecipeContext = createContext<RecipeContextValue | undefined>(undefined);
 
-export const RecipeProvider = ({ children }: { children: ReactNode }) => {
+interface RecipeProviderProps {
+  children: ReactNode;
+  recipe: Recipe;
+}
+
+export const RecipeProvider = ({ children, recipe }: RecipeProviderProps) => {
   const {
     ingredients,
     servingSize,
