@@ -20,3 +20,12 @@ export interface AuthorState {
   isOpen: boolean;
   content: AuthorContent;
 }
+
+export interface Author {
+  id: string;
+  name: string;
+  title: string | null;
+  image: string | null;
+  bio: string | null;
+  socialLinks?: SocialLinks;
+}

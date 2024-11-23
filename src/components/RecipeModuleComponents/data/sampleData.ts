@@ -1,4 +1,4 @@
-import { CaloriePerUnit } from '../types/recipe.types';
+import { CaloriePerUnit } from '@/types/recipe.types';
 
 export const sampleRecipeData = {
   servingOptions: [

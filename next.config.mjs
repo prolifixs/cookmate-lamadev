@@ -6,6 +6,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'images.pexels.com'
       }
+    ],
+    domains: [
+      'lh3.googleusercontent.com',
+      'placeholder.com',
+      'your-other-domains.com'
     ]
   }
 };

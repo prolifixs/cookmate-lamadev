@@ -1,8 +1,8 @@
 import { createContext, useContext, ReactNode } from 'react';
 import { useRecipe } from '../hooks/useRecipe';
 import { useAllergy } from '../hooks/useAllergy';
-import { Ingredient, AlternativeItem } from '../types/recipe.types';
-import { Recipe } from '@/components/ProfileComponents/types/recipe.types';
+import { Ingredient, AlternativeItem } from '@/types/recipe.types';
+import { Recipe } from '@/types/recipe.types';
 
 interface RecipeContextValue {
   ingredients: Ingredient[];
@@ -37,7 +37,7 @@ export const RecipeProvider = ({ children, recipe }: RecipeProviderProps) => {
     setIngredients,
     setServingSize,
     handleAmountChange
-  } = useRecipe();
+  } = useRecipe(recipe);
 
   const allergyHandlers = useAllergy(ingredients, setIngredients);
 

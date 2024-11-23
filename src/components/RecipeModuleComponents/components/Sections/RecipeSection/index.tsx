@@ -6,7 +6,6 @@ import { RecipeTable } from './RecipeTable';
 import { AllergyModal } from './AllergyModal';
 import AlternativeSection from './AlternativeSection';
 import { useRecipeContext } from '../../../context/RecipeContext';
-import { sampleRecipeData } from '../../../data/sampleData';
 import { useState } from 'react';
 import { AlternativeItem } from '@/components/RecipeModuleComponents/types/alternative.types';
 
@@ -29,6 +28,13 @@ export default function RecipeSection() {
   } = useRecipeContext();
 
   const [alternatives, setAlternatives] = useState<AlternativeItem[]>([]);
+
+  const servingOptions = [
+    { value: 2, label: '2 servings' },
+    { value: 4, label: '4 servings' },
+    { value: 6, label: '6 servings' },
+    { value: 8, label: '8 servings' }
+  ];
 
   if (error) {
     return (
@@ -55,7 +61,7 @@ export default function RecipeSection() {
             <ServingSelector
               value={servingSize}
               onChange={handleServingChange}
-              options={sampleRecipeData.servingOptions}
+              options={servingOptions}
             />
           </div>
 
@@ -73,14 +79,10 @@ export default function RecipeSection() {
         <AlternativeSection 
           alternatives={alternativeItems.map(alt => {
             const originalIngredient = ingredients.find(ing => ing.id === alt.originalItem);
-            const details = sampleRecipeData.alternativeDetails[alt.originalItem] || {
-              amount: originalIngredient?.amount || "0g",
-              calories: originalIngredient?.calories || "0kcal"
-            };
             return {
               originalItem: alt.originalItem,
-              amount: details.amount,
-              calories: details.calories
+              amount: originalIngredient?.amount || "0g",
+              calories: originalIngredient?.calories || "0kcal"
             };
           })} 
         />

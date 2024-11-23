@@ -1,8 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Ingredient, AlternativeItem } from '../types/recipe.types';
-import { sampleRecipeData, sampleCalorieData } from '../data/sampleData';
-import { parseAmount } from '../utils/helpers';
-import { calculateCalories } from '../utils/calculations';
+import { useState } from 'react';
+import { Ingredient, Recipe } from '@/types/recipe.types';
 
 interface UseRecipeReturn {
   ingredients: Ingredient[];
@@ -14,70 +11,21 @@ interface UseRecipeReturn {
   handleAmountChange: (index: number, newValue: string) => void;
 }
 
-export const useRecipe = (): UseRecipeReturn => {
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [servingSize, setServingSize] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
+export const useRecipe = (initialRecipe: Recipe): UseRecipeReturn => {
+  const initialIngredients: Ingredient[] = initialRecipe.ingredients.map((ing, index) => ({
+    id: `${index}`,
+    item: ing.item,
+    amount: ing.amount,
+    calories: ing.calories,
+    allergy: ing.allergy || false,
+    availability: getAvailabilityStatus(ing.availabilityValue),
+    availabilityValue: ing.availabilityValue || 0
+  }));
+
+  const [ingredients, setIngredients] = useState<Ingredient[]>(initialIngredients);
+  const [servingSize, setServingSize] = useState(Number(initialRecipe.servings));
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Initialize ingredients with random availability
-  useEffect(() => {
-    try {
-      const randomizedIngredients = sampleRecipeData.ingredients.map(ing => ({
-        ...ing,
-        availabilityValue: Math.floor(Math.random() * 100)
-      }));
-      setIngredients(randomizedIngredients);
-      setIsLoading(false);
-    } catch (err) {
-      setError('Failed to initialize recipe data');
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Update ingredients when serving size changes
-  useEffect(() => {
-    if (ingredients.length === 0) return;
-    
-    try {
-      setIngredients(prev => prev.map(ingredient => {
-        const { value, unit } = parseAmount(ingredient.amount);
-        const newValue = value * servingSize;
-        const newAmount = `${newValue} ${unit}`;
-        const newCalories = calculateCalories(ingredient.item, newAmount, sampleCalorieData);
-        
-        return {
-          ...ingredient,
-          amount: newAmount,
-          calories: `${newCalories} kcal`
-        };
-      }));
-    } catch (err) {
-      setError('Failed to update serving size');
-    }
-  }, [servingSize]);
-
-  const handleAmountChange = (index: number, newValue: string) => {
-    if (!newValue) return;
-    
-    try {
-      setIngredients(prev => prev.map((ingredient, i) => {
-        if (i !== index) return ingredient;
-        
-        const { unit } = parseAmount(ingredient.amount);
-        const newAmount = `${newValue} ${unit}`;
-        const newCalories = calculateCalories(ingredient.item, newAmount, sampleCalorieData);
-        
-        return {
-          ...ingredient,
-          amount: newAmount,
-          calories: `${newCalories} kcal`
-        };
-      }));
-    } catch (err) {
-      setError('Failed to update amount');
-    }
-  };
 
   return {
     ingredients,
@@ -86,6 +34,20 @@ export const useRecipe = (): UseRecipeReturn => {
     error,
     setIngredients,
     setServingSize,
-    handleAmountChange
+    handleAmountChange: (index: number, value: string) => {
+      const newIngredients = [...ingredients];
+      newIngredients[index] = {
+        ...newIngredients[index],
+        amount: value
+      };
+      setIngredients(newIngredients);
+    }
   };
 };
+
+function getAvailabilityStatus(value: number): string {
+  if (value >= 70) return 'High';
+  if (value >= 50) return 'Medium';
+  if (value >= 30) return 'Low';
+  return 'Out of Stock';
+}

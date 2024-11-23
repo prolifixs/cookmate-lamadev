@@ -2,6 +2,7 @@ import React from "react"
 import Link from "next/link"
 import Image from "next/image"
 import MobileMenu from "./MobileMenu"
+import LoginButton from "./auth/LoginButton"
 //import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
 //import { ClerkLoaded, ClerkLoading } from "@clerk/nextjs"
 
@@ -67,6 +68,7 @@ const Navbar = () => {
             </SignedOut>
           {/*</ClerkLoaded>*/}
           <MobileMenu/>
+          <LoginButton />
         </div>
       </div>
     )
