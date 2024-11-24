@@ -29,7 +29,6 @@ import {
 import TiktokIcon from '../Icons/TiktokIcon'
 import { Recipe } from '@/types/recipe.types'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
 import { MonthlyMealPlan } from '@/types/mealPlan.types'
 
 interface TabPanelProps {
@@ -61,7 +60,6 @@ function TabPanel(props: TabPanelProps) {
 type WeekKey = 'Wk1' | 'Wk2' | 'Wk3' | 'Wk4';
 
 export default function ProfileContent() {
-  const { data: session } = useSession()
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(true)
   const [userData, setUserData] = useState({
@@ -87,7 +85,6 @@ export default function ProfileContent() {
     'Wk4': [],
   })
 
-  // Move weekKeyMap definition here, before any useEffect that uses it
   const weekKeyMap = useMemo(() => ({
     0: 'Wk1',
     1: 'Wk2',
@@ -97,44 +94,42 @@ export default function ProfileContent() {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (session?.user?.email) {
-        const response = await fetch(`/api/user/${session.user.email}`)
+      try {
+        const response = await fetch(`/api/user/profile`)
         const data = await response.json()
         setUserData(data)
+      } catch (error) {
+        console.error('Error fetching user data:', error)
       }
     }
     fetchUserData()
-  }, [session])
+  }, [])
 
   useEffect(() => {
     const fetchMealPlan = async () => {
-      if (session?.user?.email) {
-        try {
-          const response = await fetch(`/api/user/${session.user.email}/mealplan`)
-          if (!response.ok) throw new Error('Failed to fetch meal plan')
-          const data = await response.json()
-          console.log('API Response:', data)
-          
-          if (!data) {
-            console.log('No meal plan data received')
-            return
-          }
-          
-          // Verify the data structure
-          if (!data.weeks || !Array.isArray(data.weeks)) {
-            console.error('Invalid meal plan data structure:', data)
-            return
-          }
-          
-          setMealPlan(data)
-        } catch (error) {
-          console.error('Error fetching meal plan:', error)
+      try {
+        const response = await fetch(`/api/mealplan`)
+        if (!response.ok) throw new Error('Failed to fetch meal plan')
+        const data = await response.json()
+        
+        if (!data) {
+          console.log('No meal plan data received')
+          return
         }
+        
+        if (!data.weeks || !Array.isArray(data.weeks)) {
+          console.error('Invalid meal plan data structure:', data)
+          return
+        }
+        
+        setMealPlan(data)
+      } catch (error) {
+        console.error('Error fetching meal plan:', error)
       }
     }
     
     fetchMealPlan()
-  }, [session])
+  }, [])
 
   useEffect(() => {
     if (!mealPlan || !mealPlan.weeks) {
@@ -184,23 +179,21 @@ export default function ProfileContent() {
   }
 
   const handleSetMyPlans = async () => {
-    if (!session?.user?.email || !selectedDay) return
+    if (!selectedDay) return
 
     try {
-      const response = await fetch(`/api/user/${session.user.email}/mealplan`, {
+      const response = await fetch(`/api/mealplan`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           date: selectedDay,
-          // Add other meal plan data
         }),
       })
 
       if (!response.ok) throw new Error('Failed to update meal plan')
       
-      // Refresh meal plan data
       const updatedMealPlan = await response.json()
       setMealPlan(updatedMealPlan)
       setIsReplateDialogOpen(false)

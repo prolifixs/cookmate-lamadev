@@ -5,12 +5,20 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'images.pexels.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '/a/**'
+      },
+      {
+        protocol: 'https',
+        hostname: 'placeholder.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'your-other-domains.com'
       }
-    ],
-    domains: [
-      'lh3.googleusercontent.com',
-      'placeholder.com',
-      'your-other-domains.com'
     ]
   }
 };
